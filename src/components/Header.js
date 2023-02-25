@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -7,7 +7,7 @@ import {
 	faMedium,
 	faStackOverflow,
 } from "@fortawesome/free-brands-svg-icons";
-import { Box, Button, HStack, Link } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 
 const socials = [
 	{
@@ -38,6 +38,28 @@ const socials = [
 ];
 
 const Header = () => {
+	const [prevScrollPos, setPrevScrollPos] = useState(0);
+	const [isVisible, setIsVisible] = useState(true);
+	const headerRef = useRef(null);
+
+	const handleScroll = () => {
+		const currentScrollPos = window.scrollY;
+		const scrollUp = prevScrollPos > currentScrollPos;
+		const headerHeight = headerRef.current.clientHeight;
+
+		setIsVisible(currentScrollPos < headerHeight || scrollUp);
+
+		setPrevScrollPos(currentScrollPos);
+	};
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll);
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, [prevScrollPos, isVisible]);
+
 	const handleClick = (anchor) => () => {
 		const id = `${anchor}-section`;
 		const element = document.getElementById(id);
@@ -51,14 +73,14 @@ const Header = () => {
 
 	return (
 		<Box
+			ref={headerRef}
 			position="fixed"
 			top={0}
 			left={0}
 			right={0}
-			translateY={0}
-			transitionProperty="transform"
-			transitionDuration=".3s"
-			transitionTimingFunction="ease-in-out"
+			boxShadow={isVisible ? 4 : 0}
+			transition="transform 200ms ease-in-out, box-shadow 200ms ease-in-out"
+			transform={isVisible ? 'translateY(0)' : 'translateY(-200px)'}
 			backgroundColor="#18181b"
 		>
 			<Box color="white" maxWidth="1280px" margin="0 auto">
@@ -83,7 +105,7 @@ const Header = () => {
 								Contact Me
 							</a>
 							<a href="#projects" onClick={handleClick('projects')}>
-							Projects
+								Projects
 							</a>
 						</HStack>
 					</nav>
