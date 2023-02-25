@@ -41,7 +41,6 @@ const Header = () => {
 	const handleClick = (anchor) => () => {
 		const id = `${anchor}-section`;
 		const element = document.getElementById(id);
-		console.log(element);
 		if (element) {
 			element.scrollIntoView({
 				behavior: "smooth",
